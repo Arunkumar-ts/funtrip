@@ -8,9 +8,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DeleteMember = exports.UpdateMember = exports.CreateMember = exports.GetSingleMember = exports.getAllMembers = void 0;
 const db_1 = require("../configs/db");
+const validator_1 = __importDefault(require("validator"));
 const getAllMembers = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const pool = yield (0, db_1.getConnection)();
@@ -42,6 +46,12 @@ const CreateMember = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
     const { member_name, email, phone_no } = req.body;
     if (!member_name || !email) {
         throw new Error("Name and email are required");
+    }
+    if (!validator_1.default.isEmail(email)) {
+        throw new Error('Invalid email format');
+    }
+    if ((phone_no === null || phone_no === void 0 ? void 0 : phone_no.length) !== 10) {
+        throw new Error("Phone number is invalid!");
     }
     try {
         const pool = yield (0, db_1.getConnection)();

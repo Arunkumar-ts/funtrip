@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { getConnection, sql } from "../configs/db";
+import validator from 'validator';
 
 interface FriendInput {
   member_name: string;
@@ -36,6 +37,12 @@ export const CreateMember = async (req:Request, res:Response, next:NextFunction)
     const { member_name, email, phone_no }: FriendInput = req.body;
     if (!member_name || !email ) {
         throw new Error("Name and email are required");
+    }
+    if (!validator.isEmail(email)) {
+        throw new Error('Invalid email format');
+    }
+    if(phone_no?.length !==10){
+        throw new Error("Phone number is invalid!");        
     }
     try {
         const pool = await getConnection();

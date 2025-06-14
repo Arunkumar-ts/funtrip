@@ -16,7 +16,6 @@ const router:Router = express.Router();
  *   description: Member management
  */
 
-
 /**
  * @swagger
  * /api/member:

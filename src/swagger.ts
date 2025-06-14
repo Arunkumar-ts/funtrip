@@ -10,12 +10,12 @@ const options = {
       title: 'FunTrip API',
       version: '1.0.0',
       // description: 'My Express API with Swagger in TypeScript',
-    }
-    // servers: [
-    //   {
-    //     url: `http://localhost:${process.env.PORT}`,
-    //   },
-    // ],
+    },
+    servers: [
+      {
+        url: `http://localhost:${process.env.PORT}`,
+      },
+    ],
   },
   apis: ['./src/routes/*'], // path to your route files
 };
