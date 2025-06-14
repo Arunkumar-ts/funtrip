@@ -1,12 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { getConnection, sql } from "../configs/db";
 import validator from 'validator';
-
-interface FriendInput {
-  member_name: string;
-  email: string;
-  phone_no?: string;
-}
+import {FriendInput} from "../types";
 
 export const getAllMembers = async (req:Request, res:Response, next:NextFunction)=>{
     try {
@@ -25,7 +20,9 @@ export const GetSingleMember = async (req:Request, res:Response, next:NextFuncti
         const result = await pool.request()
         .input("member_id", sql.Int, member_id).execute("GetSingleMember");
         if (result.rowsAffected[0] === 0) {
-            throw new Error( "Member not found");
+            const error = new Error("Member not found") as any;
+            error.status = 404;
+            throw error;
         }
         res.status(200).json(result.recordset);
     } catch (error) {
@@ -68,7 +65,9 @@ export const UpdateMember = async (req:Request, res:Response, next:NextFunction)
         const resultMember = await pool.request()
         .input("member_id", sql.Int, member_id).execute("GetSingleMember");
         if (resultMember.rowsAffected[0] === 0) {
-            throw new Error( "Member not found");
+            const error = new Error("Member not found") as any;
+            error.status = 404;
+            throw error;
         }
 
         const result = await pool.request()
@@ -95,7 +94,9 @@ export const DeleteMember = async (req:Request, res:Response, next:NextFunction)
         const resultMember = await pool.request()
         .input("member_id", sql.Int, member_id).execute("GetSingleMember");
         if (resultMember.rowsAffected[0] === 0) {
-            throw new Error( "Member not found");
+            const error = new Error("Member not found") as any;
+            error.status = 404;
+            throw error;
         }
 
         const result = await pool.request()

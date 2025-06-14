@@ -10,7 +10,7 @@ import { setupSwagger } from './swagger';
 config();
 getConnection();
 const app:Express = express();
-const PORT:Number = Number(process.env.PORT);
+const PORT:number = Number(process.env.PORT);
 
 app.use(express.json());
 setupSwagger(app); 

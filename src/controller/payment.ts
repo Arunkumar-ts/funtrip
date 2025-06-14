@@ -26,7 +26,9 @@ export const GetSingleMemberPayments = async(req:Request, res:Response, next:Nex
         const resultMember = await pool.request()
         .input("member_id", sql.Int, member_id).execute("GetSingleMember");
         if (resultMember.rowsAffected[0] === 0) {
-            throw new Error( "Member not found");
+            const error = new Error("Member not found") as any;
+            error.status = 404;
+            throw error;
         }
 
         const result = await pool.request()

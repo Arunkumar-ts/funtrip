@@ -29,7 +29,9 @@ const GetSingleMemberPayments = (req, res, next) => __awaiter(void 0, void 0, vo
         const resultMember = yield pool.request()
             .input("member_id", db_1.sql.Int, member_id).execute("GetSingleMember");
         if (resultMember.rowsAffected[0] === 0) {
-            throw new Error("Member not found");
+            const error = new Error("Member not found");
+            error.status = 404;
+            throw error;
         }
         const result = yield pool.request()
             .input("member_id", db_1.sql.Int, member_id).execute("GetSingleMemberPayments");

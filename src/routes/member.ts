@@ -13,7 +13,6 @@ const router:Router = express.Router();
  * @swagger
  * tags:
  *   name: Members
- *   description: Member management
  */
 
 /**
@@ -130,7 +129,7 @@ router.post("/", CreateMember);
  *               phone_no:
  *                 type: string
  *     responses:
- *       201:
+ *       200:
  *         description: Member updated
  */
 // PUT update member
@@ -149,7 +148,7 @@ router.put("/:id",UpdateMember)
  *         schema:
  *         type: integer
  *     responses:
- *       201:
+ *       200:
  *         description: Member deleted
  */
 // DELETE delete member

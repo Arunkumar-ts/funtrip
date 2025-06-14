@@ -6,8 +6,8 @@ const router:Router = express.Router();
 /**
  * @swagger
  * tags:
- *   name: Payment
- *   description: Payment management
+ *   name: Payments
+//  *   description: Payment management
  */
 
 /**
@@ -15,7 +15,7 @@ const router:Router = express.Router();
  * /api/payment:
  *   get:
  *     summary: Get all payments
- *     tags: [Payment]
+ *     tags: [Payments]
  *     responses:
  *       200:
  *         description: List of payments
@@ -47,7 +47,7 @@ router.get("/", GetAllPayments);
  * /api/payment/{id}:
  *   get:
  *     summary: Get single member payment list
- *     tags: [Payment]
+ *     tags: [Payments]
  *     parameters:
  *       - name: id
  *         in: path
@@ -85,7 +85,7 @@ router.get("/:id", GetSingleMemberPayments);
  * /api/payment/{id}:
  *   post:
  *     summary: Create a new payment
- *     tags: [Payment]
+ *     tags: [Payments]
  *     parameters:
  *       - name: id
  *         in: path
