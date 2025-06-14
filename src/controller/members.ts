@@ -59,6 +59,12 @@ export const UpdateMember = async (req:Request, res:Response, next:NextFunction)
     if (!member_name || !email ) {
         throw new Error("Name and email are required");
     }
+    if (!validator.isEmail(email)) {
+        throw new Error('Invalid email format');
+    }
+    if(phone_no?.length !==10){
+        throw new Error("Phone number is invalid!");        
+    }
     try {
         const pool = await getConnection();
 

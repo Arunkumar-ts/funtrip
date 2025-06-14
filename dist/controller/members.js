@@ -74,6 +74,12 @@ const UpdateMember = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
     if (!member_name || !email) {
         throw new Error("Name and email are required");
     }
+    if (!validator_1.default.isEmail(email)) {
+        throw new Error('Invalid email format');
+    }
+    if ((phone_no === null || phone_no === void 0 ? void 0 : phone_no.length) !== 10) {
+        throw new Error("Phone number is invalid!");
+    }
     try {
         const pool = yield (0, db_1.getConnection)();
         const resultMember = yield pool.request()
