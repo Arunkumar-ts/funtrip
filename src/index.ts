@@ -24,3 +24,5 @@ app.use(errorHandler)
 const server:Server = app.listen(PORT, ()=>{
     console.log(`Server start at http://localhost:${PORT}`);
 })
+
+// devops, swagger, service layer

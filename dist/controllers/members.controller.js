@@ -14,17 +14,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DeleteMember = exports.UpdateMember = exports.CreateMember = exports.GetSingleMember = exports.getAllMembers = void 0;
 const db_1 = require("../configs/db");
-const types_1 = require("../types");
+const member_request_1 = require("../data-contracts/request/member.request");
 const common_response_1 = __importDefault(require("../data-contracts/response/common.response"));
 const getAllMembers = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const pool = yield (0, db_1.getConnection)();
         const result = yield pool.request().execute("GetMembers");
-        // res.status(200).json(members.recordset);
-        res.status(200).json(common_response_1.default.success(200, result.recordset, "Members fetched successfully"));
+        const member = result.recordset;
+        res.status(200).json(common_response_1.default.success(200, member, "Members fetched successfully"));
     }
     catch (error) {
-        // next(error);
         res.status(500).json(common_response_1.default.error(500, "Error", error));
     }
 });
@@ -35,21 +34,22 @@ const GetSingleMember = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
         const pool = yield (0, db_1.getConnection)();
         const result = yield pool.request()
             .input("member_id", db_1.sql.Int, member_id).execute("GetSingleMember");
+        const member = result.recordset;
         if (result.rowsAffected[0] === 0) {
             const error = { error: "Member not found" };
             res.status(404).json(common_response_1.default.error(404, "Failed to fetch member", error));
         }
-        res.status(200).json(common_response_1.default.success(200, result.recordset, "Member fetched successfully"));
+        res.status(200).json(common_response_1.default.success(200, member, "Member fetched successfully"));
     }
     catch (error) {
-        // next(error)
         res.status(500).json(common_response_1.default.error(500, "Error", error));
     }
 });
 exports.GetSingleMember = GetSingleMember;
 const CreateMember = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const zodResult = types_1.memberSchema.safeParse(req.body);
+        const zodResult = member_request_1.memberSchema.safeParse(req.body);
+        console.log(req.body);
         const data = zodResult.data;
         if (data) {
             const pool = yield (0, db_1.getConnection)();
@@ -61,11 +61,9 @@ const CreateMember = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
         }
         else {
             res.status(400).json(common_response_1.default.error(400, "Invalid input", zodResult.error));
-            // throw new Error("Validation failed");
         }
     }
     catch (error) {
-        // next(error);
         res.status(500).json(common_response_1.default.error(500, "Error", error));
     }
 });
@@ -73,7 +71,7 @@ exports.CreateMember = CreateMember;
 const UpdateMember = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const member_id = parseInt(req.params.id);
     try {
-        const zodResult = types_1.memberSchema.safeParse(req.body);
+        const zodResult = member_request_1.memberSchema.safeParse(req.body);
         const data = zodResult.data;
         if (data && member_id) {
             const pool = yield (0, db_1.getConnection)();
@@ -83,20 +81,16 @@ const UpdateMember = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
                 .input("email", db_1.sql.VarChar, data.email)
                 .input("phone_no", db_1.sql.VarChar, data.phone_no).execute("CreateMember");
             if (result.rowsAffected[0] === 0) {
-                // throw new Error("Member not found");
                 const error = { error: "Member not found" };
                 res.status(404).json(common_response_1.default.error(404, "Error", error));
             }
-            res.status(200).json(common_response_1.default.success(200, result.recordset, "Member updated successfully"));
-            // res.status(201).json({ message: "Member updated successfully" });
+            res.status(200).json(common_response_1.default.success(200, null, "Member updated successfully"));
         }
         else {
             res.status(400).json(common_response_1.default.error(400, "Invalid input", zodResult.error));
-            // throw new Error("Validation failed");
         }
     }
     catch (error) {
-        // next(error);
         res.status(500).json(common_response_1.default.error(500, "Error", error));
     }
 });
@@ -109,15 +103,12 @@ const DeleteMember = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
             .input("member_id", db_1.sql.Int, member_id)
             .execute("DeleteMember");
         if (result.rowsAffected[0] === 0) {
-            // throw new Error("Member not found");
             const error = { error: "Member not found" };
             res.status(404).json(common_response_1.default.error(404, "Error", error));
         }
         res.status(200).json(common_response_1.default.success(200, null, "Member deleted successfully"));
-        // res.status(200).json({ message: "Member deleted successfully" });
     }
     catch (error) {
-        // next(error);
         res.status(500).json(common_response_1.default.error(500, "Error", error));
     }
 });
