@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const payment_1 = require("../controller/payment");
+const payment_controller_1 = require("../controllers/payment.controller");
 const router = express_1.default.Router();
 /**
  * @swagger
@@ -42,7 +42,7 @@ const router = express_1.default.Router();
  *                     type: string
  */
 // GET All payments
-router.get("/", payment_1.GetAllPayments);
+router.get("/", payment_controller_1.GetAllPayments);
 /**
  * @swagger
  * /api/payment/{id}:
@@ -79,7 +79,7 @@ router.get("/", payment_1.GetAllPayments);
  *                     type: string
  */
 // GET Single member payment list
-router.get("/:id", payment_1.GetSingleMemberPayments);
+router.get("/:id", payment_controller_1.GetSingleMemberPayments);
 /**
  * @swagger
  * /api/payment/{id}:
@@ -114,5 +114,5 @@ router.get("/:id", payment_1.GetSingleMemberPayments);
  *         description: Payment created
  */
 // POST create payment
-router.post("/:id", payment_1.CreatePayment);
+router.post("/:id", payment_controller_1.CreatePayment);
 exports.default = router;

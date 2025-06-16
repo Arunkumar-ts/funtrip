@@ -1,5 +1,5 @@
 import express, { Router } from "express";
-import { CreatePayment, GetAllPayments, GetSingleMemberPayments } from "../controller/payment";
+import { CreatePayment, GetAllPayments, GetSingleMemberPayments } from "../controllers/payment.controller";
 
 const router:Router = express.Router();
 

@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const members_1 = require("../controller/members");
+const members_controller_1 = require("../controllers/members.controller");
 const router = express_1.default.Router();
 /**
  * @swagger
@@ -35,7 +35,7 @@ const router = express_1.default.Router();
  *                     type: string
  */
 // GET all members
-router.get("/", members_1.getAllMembers);
+router.get("/", members_controller_1.getAllMembers);
 /**
  * @swagger
  * /api/member/{id}:
@@ -48,6 +48,7 @@ router.get("/", members_1.getAllMembers);
  *         required: true
  *         schema:
  *           type: integer
+ *           discription: Member ID
  *     responses:
  *       200:
  *         description: A member object
@@ -64,7 +65,7 @@ router.get("/", members_1.getAllMembers);
  *                   type: string
  */
 // GET Single member
-router.get("/:id", members_1.GetSingleMember);
+router.get("/:id", members_controller_1.GetSingleMember);
 /**
  * @swagger
  * /api/member:
@@ -85,6 +86,8 @@ router.get("/:id", members_1.GetSingleMember);
  *                 type: string
  *               email:
  *                 type: string
+ *                 format: email
+ *                 example: "arun@example.com"
  *               phone_no:
  *                 type: string
  *     responses:
@@ -92,7 +95,7 @@ router.get("/:id", members_1.GetSingleMember);
  *         description: Member created
  */
 // POST new member
-router.post("/", members_1.CreateMember);
+router.post("/", members_controller_1.CreateMember);
 /**
  * @swagger
  * /api/member/{id}:
@@ -126,7 +129,7 @@ router.post("/", members_1.CreateMember);
  *         description: Member updated
  */
 // PUT update member
-router.put("/:id", members_1.UpdateMember);
+router.put("/:id", members_controller_1.UpdateMember);
 /**
  * @swagger
  * /api/member/{id}:
@@ -144,5 +147,5 @@ router.put("/:id", members_1.UpdateMember);
  *         description: Member deleted
  */
 // DELETE delete member
-router.delete("/:id", members_1.DeleteMember);
+router.delete("/:id", members_controller_1.DeleteMember);
 exports.default = router;

@@ -5,7 +5,7 @@ import {
     CreateMember,
     UpdateMember,
     DeleteMember
-} from "../controller/members";
+} from "../controllers/members.controller";
 
 const router:Router = express.Router();
 
@@ -53,6 +53,7 @@ router.get("/", getAllMembers);
  *         required: true
  *         schema:
  *           type: integer
+ *           discription: Member ID
  *     responses:
  *       200:
  *         description: A member object
@@ -91,6 +92,8 @@ router.get("/:id", GetSingleMember);
  *                 type: string
  *               email:
  *                 type: string
+ *                 format: email
+ *                 example: "arun@example.com"
  *               phone_no:
  *                 type: string
  *     responses:
