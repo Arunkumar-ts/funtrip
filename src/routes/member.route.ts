@@ -1,10 +1,10 @@
 import express, { Router } from "express";
 import {
     getAllMembers,
-    GetSingleMember,
-    CreateMember,
-    UpdateMember,
-    DeleteMember
+    getSingleMember,
+    createMember,
+    updateMember,
+    deleteMember
 } from "../controllers/members.controller";
 
 const router:Router = express.Router();
@@ -17,10 +17,30 @@ const router:Router = express.Router();
 
 /**
  * @swagger
- * /api/member:
- *   get:
+ * /api/member/list:
+ *   post:
  *     summary: Get all members
  *     tags: [Members]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - pageSize
+ *               - pageIndex
+ *             properties:
+ *               pageSize:
+ *                 type: number
+ *               pageIndex:
+ *                 type: number
+ *               sortBy:
+ *                 type: string
+ *               sortOn:
+ *                  type: string
+ *               searchString:
+ *                  type: string
  *     responses:
  *       200:
  *         description: List of members
@@ -39,7 +59,7 @@ const router:Router = express.Router();
  *                     type: string
  */
 // GET all members
-router.get("/", getAllMembers);
+router.post("/list", getAllMembers);
 
 /**
  * @swagger
@@ -70,7 +90,7 @@ router.get("/", getAllMembers);
  *                   type: string
  */
 // GET Single member
-router.get("/:id", GetSingleMember);
+router.get("/:id", getSingleMember);
 
 /**
  * @swagger
@@ -101,7 +121,7 @@ router.get("/:id", GetSingleMember);
  *         description: Member created
  */
 // POST new member
-router.post("/", CreateMember);
+router.post("/", createMember);
 
 /**
  * @swagger
@@ -136,7 +156,7 @@ router.post("/", CreateMember);
  *         description: Member updated
  */
 // PUT update member
-router.put("/:id",UpdateMember)
+router.put("/:id",updateMember)
 
 /**
  * @swagger
@@ -155,6 +175,6 @@ router.put("/:id",UpdateMember)
  *         description: Member deleted
  */
 // DELETE delete member
-router.delete("/:id", DeleteMember)
+router.delete("/:id", deleteMember)
 
 export default router;

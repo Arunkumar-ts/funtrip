@@ -11,7 +11,7 @@ const options = {
     definition: {
         openapi: '3.0.0',
         info: {
-            title: 'FunTrip API',
+            title: 'Fund Manager',
             version: '1.0.0',
             // description: 'My Express API with Swagger in TypeScript',
         },
@@ -21,7 +21,8 @@ const options = {
             },
         ],
     },
-    apis: ['./src/routes/*'], // path to your route files
+    apis: ['./src/routes/*'],
+    // apis: ['./dist/routes/*'],
 };
 const swaggerSpec = (0, swagger_jsdoc_1.default)(options);
 const setupSwagger = (app) => {

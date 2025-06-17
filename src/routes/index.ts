@@ -1,6 +1,6 @@
 import express, { Router } from "express";
-import member from "./member"
-import payment from "./payment";
+import member from "./member.route"
+import payment from "./payment.route";
 
 const router:Router = express.Router();
 

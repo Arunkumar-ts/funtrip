@@ -1,5 +1,5 @@
 import express, { Router } from "express";
-import { CreatePayment, GetAllPayments, GetSingleMemberPayments } from "../controllers/payment.controller";
+import { createPayment, getAllPayments, getSingleMemberPayments } from "../controllers/payment.controller";
 
 const router:Router = express.Router();
 
@@ -40,7 +40,7 @@ const router:Router = express.Router();
  *                     type: string
  */
 // GET All payments
-router.get("/", GetAllPayments);
+router.get("/", getAllPayments);
 
 /**
  * @swagger
@@ -78,7 +78,7 @@ router.get("/", GetAllPayments);
  *                     type: string
  */
 // GET Single member payment list
-router.get("/:id", GetSingleMemberPayments);
+router.get("/:id", getSingleMemberPayments);
 
 /**
  * @swagger
@@ -114,6 +114,6 @@ router.get("/:id", GetSingleMemberPayments);
  *         description: Payment created
  */
 // POST create payment
-router.post("/:id", CreatePayment);
+router.post("/:id", createPayment);
 
 export default router;

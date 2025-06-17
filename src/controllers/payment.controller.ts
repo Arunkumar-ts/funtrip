@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { getConnection, sql } from "../configs/db";
+import CommonResponse from "../data-contracts/response/common.response";
 
 interface PaymentInput {
   amount:number,
@@ -8,17 +9,18 @@ interface PaymentInput {
   status:string
 }
 
-export const GetAllPayments = async (req:Request, res:Response, next:NextFunction)=>{
+export const getAllPayments = async (req:Request, res:Response, next:NextFunction)=>{
     try {
         const pool = await getConnection();
         const result = await pool.request().execute("GetAllPayments");
-        res.status(200).json(result.recordset);
+        // res.status(200).json(result.recordset);
+        res.status(200).json(CommonResponse.success(200, result.recordset , "Payment fetched successfully"));
     } catch (error) {
         next(error);
     }
 }
 
-export const GetSingleMemberPayments = async(req:Request, res:Response, next:NextFunction)=>{
+export const getSingleMemberPayments = async(req:Request, res:Response, next:NextFunction)=>{
     const member_id:number = parseInt(req.params.id);
     try {
         const pool = await getConnection();
@@ -42,7 +44,7 @@ export const GetSingleMemberPayments = async(req:Request, res:Response, next:Nex
     }
 }
 
-export const CreatePayment = async (req:Request, res:Response, next:NextFunction)=>{
+export const createPayment = async (req:Request, res:Response, next:NextFunction)=>{
     const member_id:number = parseInt(req.params.id);
     const { amount, transaction_id, status}: PaymentInput = req.body;
     if (!amount || !member_id || !transaction_id || !status ) {

@@ -1,45 +1,41 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import { getConnection, sql } from "../configs/db";
-import { memberSchema } from "../data-contracts/request/member.request";
+import { memberSchema } from "../data-contracts/request/createmembers.request";
+
 import CommonResponse from "../data-contracts/response/common.response";
-import MemberResponse from "../data-contracts/response/member.response";
+import { getMemberListService, responceType, getSingleMemberService } from "../services/member.services";
 
-export const getAllMembers = async (req:Request, res:Response, next:NextFunction)=>{
+export const getAllMembers = async (req:Request, res:Response)=>{
     try {
-        const pool = await getConnection();
-        const result = await pool.request().execute("GetMembers");
-        const member:MemberResponse[] = result.recordset;
-
-        res.status(200).json(CommonResponse.success(200, member , "Members fetched successfully"));
-    } catch (error) {
-        res.status(500).json(CommonResponse.error(500, "Error", error as object));
-    }
-}
-
-export const GetSingleMember = async (req:Request, res:Response, next:NextFunction)=>{
-    const member_id:number = parseInt(req.params.id);
-    try {
-        const pool = await getConnection();
-        const result = await pool.request()
-        .input("member_id", sql.Int, member_id).execute("GetSingleMember");
-        const member:MemberResponse[] = result.recordset;
-
-        if (result.rowsAffected[0] === 0) {
-            const error:object = {error :"Member not found"};
-            res.status(404).json(CommonResponse.error(404, "Failed to fetch member", error));
+        const result:responceType = await getMemberListService(req);
+        if(result.success){
+            res.status(200).json(CommonResponse.success(200, result.data , "Members fetched successfully"));
         }
         else{
-            res.status(200).json(CommonResponse.success(200, member, "Member fetched successfully"));
+            res.status(500).json(CommonResponse.error(500, "Error", result.error));
         }
     } catch (error) {
-        res.status(500).json(CommonResponse.error(500, "Error", error as object));
+        res.status(500).json(CommonResponse.error(500, "Internal error", error as object));
     }
 }
 
-export const CreateMember = async (req:Request, res:Response, next:NextFunction)=>{
+export const getSingleMember = async (req:Request, res:Response)=>{
+    try {
+        const result:responceType = await getSingleMemberService(req);
+        if(result.success){
+            res.status(200).json(CommonResponse.success(200, result.data , "Member fetched successfully"));
+        }
+        else{
+            res.status(500).json(CommonResponse.error(500, "Error", result.error));
+        }
+    } catch (error) {
+        res.status(500).json(CommonResponse.error(500, "Internal error", error as object));
+    }
+}
+
+export const createMember = async (req:Request, res:Response)=>{
     try {
         const zodResult = memberSchema.safeParse(req.body);
-        console.log(req.body);
         const data = zodResult.data;
 
         if(data){
@@ -58,7 +54,7 @@ export const CreateMember = async (req:Request, res:Response, next:NextFunction)
     }
 }
 
-export const UpdateMember = async (req:Request, res:Response, next:NextFunction)=>{
+export const updateMember = async (req:Request, res:Response)=>{
     const member_id:number = parseInt(req.params.id);
     try {
         const zodResult = memberSchema.safeParse(req.body);
@@ -86,7 +82,7 @@ export const UpdateMember = async (req:Request, res:Response, next:NextFunction)
     }
 }
 
-export const DeleteMember = async (req:Request, res:Response, next:NextFunction)=>{
+export const deleteMember = async (req:Request, res:Response)=>{
     const member_id:number = parseInt(req.params.id);
     try {
         const pool = await getConnection();

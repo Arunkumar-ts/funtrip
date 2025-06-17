@@ -12,44 +12,44 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DeleteMember = exports.UpdateMember = exports.CreateMember = exports.GetSingleMember = exports.getAllMembers = void 0;
+exports.deleteMember = exports.updateMember = exports.createMember = exports.getSingleMember = exports.getAllMembers = void 0;
 const db_1 = require("../configs/db");
-const member_request_1 = require("../data-contracts/request/member.request");
+const createmembers_request_1 = require("../data-contracts/request/createmembers.request");
 const common_response_1 = __importDefault(require("../data-contracts/response/common.response"));
-const getAllMembers = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const member_services_1 = require("../services/member.services");
+const getAllMembers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const pool = yield (0, db_1.getConnection)();
-        const result = yield pool.request().execute("GetMembers");
-        const member = result.recordset;
-        res.status(200).json(common_response_1.default.success(200, member, "Members fetched successfully"));
+        const result = yield (0, member_services_1.getMemberListService)(req);
+        if (result.success) {
+            res.status(200).json(common_response_1.default.success(200, result.data, "Members fetched successfully"));
+        }
+        else {
+            res.status(500).json(common_response_1.default.error(500, "Error", result.error));
+        }
     }
     catch (error) {
-        res.status(500).json(common_response_1.default.error(500, "Error", error));
+        res.status(500).json(common_response_1.default.error(500, "Internal error", error));
     }
 });
 exports.getAllMembers = getAllMembers;
-const GetSingleMember = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const member_id = parseInt(req.params.id);
+const getSingleMember = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const pool = yield (0, db_1.getConnection)();
-        const result = yield pool.request()
-            .input("member_id", db_1.sql.Int, member_id).execute("GetSingleMember");
-        const member = result.recordset;
-        if (result.rowsAffected[0] === 0) {
-            const error = { error: "Member not found" };
-            res.status(404).json(common_response_1.default.error(404, "Failed to fetch member", error));
+        const result = yield (0, member_services_1.getSingleMemberService)(req);
+        if (result.success) {
+            res.status(200).json(common_response_1.default.success(200, result.data, "Member fetched successfully"));
         }
-        res.status(200).json(common_response_1.default.success(200, member, "Member fetched successfully"));
+        else {
+            res.status(500).json(common_response_1.default.error(500, "Error", result.error));
+        }
     }
     catch (error) {
-        res.status(500).json(common_response_1.default.error(500, "Error", error));
+        res.status(500).json(common_response_1.default.error(500, "Internal error", error));
     }
 });
-exports.GetSingleMember = GetSingleMember;
-const CreateMember = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+exports.getSingleMember = getSingleMember;
+const createMember = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const zodResult = member_request_1.memberSchema.safeParse(req.body);
-        console.log(req.body);
+        const zodResult = createmembers_request_1.memberSchema.safeParse(req.body);
         const data = zodResult.data;
         if (data) {
             const pool = yield (0, db_1.getConnection)();
@@ -67,11 +67,11 @@ const CreateMember = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
         res.status(500).json(common_response_1.default.error(500, "Error", error));
     }
 });
-exports.CreateMember = CreateMember;
-const UpdateMember = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+exports.createMember = createMember;
+const updateMember = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const member_id = parseInt(req.params.id);
     try {
-        const zodResult = member_request_1.memberSchema.safeParse(req.body);
+        const zodResult = createmembers_request_1.memberSchema.safeParse(req.body);
         const data = zodResult.data;
         if (data && member_id) {
             const pool = yield (0, db_1.getConnection)();
@@ -84,7 +84,9 @@ const UpdateMember = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
                 const error = { error: "Member not found" };
                 res.status(404).json(common_response_1.default.error(404, "Error", error));
             }
-            res.status(200).json(common_response_1.default.success(200, null, "Member updated successfully"));
+            else {
+                res.status(200).json(common_response_1.default.success(200, null, "Member updated successfully"));
+            }
         }
         else {
             res.status(400).json(common_response_1.default.error(400, "Invalid input", zodResult.error));
@@ -94,8 +96,8 @@ const UpdateMember = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
         res.status(500).json(common_response_1.default.error(500, "Error", error));
     }
 });
-exports.UpdateMember = UpdateMember;
-const DeleteMember = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+exports.updateMember = updateMember;
+const deleteMember = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const member_id = parseInt(req.params.id);
     try {
         const pool = yield (0, db_1.getConnection)();
@@ -106,10 +108,12 @@ const DeleteMember = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
             const error = { error: "Member not found" };
             res.status(404).json(common_response_1.default.error(404, "Error", error));
         }
-        res.status(200).json(common_response_1.default.success(200, null, "Member deleted successfully"));
+        else {
+            res.status(200).json(common_response_1.default.success(200, null, "Member deleted successfully"));
+        }
     }
     catch (error) {
         res.status(500).json(common_response_1.default.error(500, "Error", error));
     }
 });
-exports.DeleteMember = DeleteMember;
+exports.deleteMember = deleteMember;

@@ -21,7 +21,7 @@ app.use(( req:Request, res:Response, next:NextFunction)=>{
 })
 app.use(errorHandler)
 
-const server:Server = app.listen(PORT, ()=>{
+app.listen(PORT, ()=>{
     console.log(`Server start at http://localhost:${PORT}`);
 })
 

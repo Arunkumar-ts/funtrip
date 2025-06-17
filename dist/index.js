@@ -21,7 +21,7 @@ app.use((req, res, next) => {
     next(new http_errors_1.default.NotFound());
 });
 app.use(errorHandler_1.errorHandler);
-const server = app.listen(PORT, () => {
+app.listen(PORT, () => {
     console.log(`Server start at http://localhost:${PORT}`);
 });
 // devops, swagger, service layer

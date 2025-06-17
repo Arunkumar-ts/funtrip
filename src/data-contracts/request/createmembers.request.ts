@@ -6,4 +6,3 @@ export const memberSchema = z.object({
   email: z.string().email("Invalid email"),
   phone_no: z.string().regex(/^\d{10}$/, "Phone number must be 10 digits").optional()
 }).strict();
-// export type MemberInput = z.infer<typeof memberSchema>;

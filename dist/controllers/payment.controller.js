@@ -8,21 +8,26 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreatePayment = exports.GetSingleMemberPayments = exports.GetAllPayments = void 0;
+exports.createPayment = exports.getSingleMemberPayments = exports.getAllPayments = void 0;
 const db_1 = require("../configs/db");
-const GetAllPayments = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const common_response_1 = __importDefault(require("../data-contracts/response/common.response"));
+const getAllPayments = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const pool = yield (0, db_1.getConnection)();
         const result = yield pool.request().execute("GetAllPayments");
-        res.status(200).json(result.recordset);
+        // res.status(200).json(result.recordset);
+        res.status(200).json(common_response_1.default.success(200, result.recordset, "Payment fetched successfully"));
     }
     catch (error) {
         next(error);
     }
 });
-exports.GetAllPayments = GetAllPayments;
-const GetSingleMemberPayments = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+exports.getAllPayments = getAllPayments;
+const getSingleMemberPayments = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const member_id = parseInt(req.params.id);
     try {
         const pool = yield (0, db_1.getConnection)();
@@ -44,8 +49,8 @@ const GetSingleMemberPayments = (req, res, next) => __awaiter(void 0, void 0, vo
         next(error);
     }
 });
-exports.GetSingleMemberPayments = GetSingleMemberPayments;
-const CreatePayment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+exports.getSingleMemberPayments = getSingleMemberPayments;
+const createPayment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const member_id = parseInt(req.params.id);
     const { amount, transaction_id, status } = req.body;
     if (!amount || !member_id || !transaction_id || !status) {
@@ -70,4 +75,4 @@ const CreatePayment = (req, res, next) => __awaiter(void 0, void 0, void 0, func
         next(error);
     }
 });
-exports.CreatePayment = CreatePayment;
+exports.createPayment = createPayment;
