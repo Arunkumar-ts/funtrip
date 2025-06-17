@@ -23,12 +23,14 @@ export const GetSingleMember = async (req:Request, res:Response, next:NextFuncti
         const result = await pool.request()
         .input("member_id", sql.Int, member_id).execute("GetSingleMember");
         const member:MemberResponse[] = result.recordset;
-        
+
         if (result.rowsAffected[0] === 0) {
             const error:object = {error :"Member not found"};
             res.status(404).json(CommonResponse.error(404, "Failed to fetch member", error));
         }
-        res.status(200).json(CommonResponse.success(200, member, "Member fetched successfully"));
+        else{
+            res.status(200).json(CommonResponse.success(200, member, "Member fetched successfully"));
+        }
     } catch (error) {
         res.status(500).json(CommonResponse.error(500, "Error", error as object));
     }
@@ -39,7 +41,7 @@ export const CreateMember = async (req:Request, res:Response, next:NextFunction)
         const zodResult = memberSchema.safeParse(req.body);
         console.log(req.body);
         const data = zodResult.data;
-        
+
         if(data){
             const pool = await getConnection();
             await pool.request()
@@ -72,7 +74,9 @@ export const UpdateMember = async (req:Request, res:Response, next:NextFunction)
                 const error:object = {error :"Member not found"};
                 res.status(404).json(CommonResponse.error(404, "Error", error));
             }
-        res.status(200).json(CommonResponse.success(200, null, "Member updated successfully"));
+            else{
+                res.status(200).json(CommonResponse.success(200, null, "Member updated successfully"));
+            }
         }
         else{
             res.status(400).json(CommonResponse.error(400, "Invalid input", zodResult.error));
@@ -93,7 +97,9 @@ export const DeleteMember = async (req:Request, res:Response, next:NextFunction)
             const error:object = {error :"Member not found"};
             res.status(404).json(CommonResponse.error(404, "Error", error));
         }
-        res.status(200).json(CommonResponse.success(200, null, "Member deleted successfully"));
+        else{
+            res.status(200).json(CommonResponse.success(200, null, "Member deleted successfully"));
+        }
     } catch (error) {
         res.status(500).json(CommonResponse.error(500, "Error", error as object));
     }
