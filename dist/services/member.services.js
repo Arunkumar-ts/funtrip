@@ -9,11 +9,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getSingleMemberService = exports.getMemberListService = void 0;
+exports.deleteMemberService = exports.updateMemberService = exports.createMemberService = exports.getMemberService = exports.getMembersService = void 0;
 const db_1 = require("../configs/db");
 const getmemberlist_request_1 = require("../data-contracts/request/getmemberlist.request");
+const createmembers_request_1 = require("../data-contracts/request/createmembers.request");
 let responce;
-const getMemberListService = (req) => __awaiter(void 0, void 0, void 0, function* () {
+const getMembersService = (req) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const zodResult = getmemberlist_request_1.getmemberSchema.safeParse(req.body);
         const data = zodResult.data;
@@ -26,10 +27,11 @@ const getMemberListService = (req) => __awaiter(void 0, void 0, void 0, function
                 .input("sortBy", db_1.sql.VarChar, data.sortBy)
                 .input("sortOn", db_1.sql.VarChar, data.sortOn)
                 .input("searchString", db_1.sql.VarChar, data.searchString)
-                .execute("GetmembersList");
+                .execute("GetMembers");
+            const memberData = result.recordset;
             responce = {
                 success: true,
-                data: result.recordset
+                data: memberData
             };
             return responce;
         }
@@ -45,38 +47,30 @@ const getMemberListService = (req) => __awaiter(void 0, void 0, void 0, function
     catch (error) {
         responce = {
             success: false,
-            error: { error }
+            error
         };
         return responce;
     }
 });
-exports.getMemberListService = getMemberListService;
-const getSingleMemberService = (req) => __awaiter(void 0, void 0, void 0, function* () {
+exports.getMembersService = getMembersService;
+const getMemberService = (req) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const member_id = parseInt(req.params.id);
-        if (member_id) {
-            const pool = yield (0, db_1.getConnection)();
-            const result = yield pool.request()
-                .input("member_id", db_1.sql.Int, member_id).execute("GetSingleMember");
-            if (result.rowsAffected[0] === 0) {
-                responce = {
-                    success: false,
-                    error: { error: "Member not found!" }
-                };
-                return responce;
-            }
-            else {
-                responce = {
-                    success: true,
-                    data: result.recordset
-                };
-                return responce;
-            }
-        }
-        else {
+        const pool = yield (0, db_1.getConnection)();
+        const result = yield pool.request()
+            .input("member_id", db_1.sql.Int, member_id).execute("GetMember");
+        if (result.rowsAffected[0] === 0) {
             responce = {
                 success: false,
-                error: { error: "Make sure a valid ID is provided!" }
+                error: { error: "Member not found!" }
+            };
+            return responce;
+        }
+        else {
+            const responceData = result.recordset;
+            responce = {
+                success: true,
+                data: responceData
             };
             return responce;
         }
@@ -89,4 +83,134 @@ const getSingleMemberService = (req) => __awaiter(void 0, void 0, void 0, functi
         return responce;
     }
 });
-exports.getSingleMemberService = getSingleMemberService;
+exports.getMemberService = getMemberService;
+const createMemberService = (req) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const zodResult = createmembers_request_1.memberSchema.safeParse(req.body);
+        const data = zodResult.data;
+        if (data) {
+            const pool = yield (0, db_1.getConnection)();
+            const result = yield pool.request()
+                .input("member_id", db_1.sql.VarChar, 0)
+                .input("member_name", db_1.sql.VarChar, data.member_name)
+                .input("email", db_1.sql.VarChar, data.email)
+                .input("phone_no", db_1.sql.VarChar, data.phone_no).execute("CreateMember");
+            console.log(result);
+            responce = {
+                success: true
+            };
+            return responce;
+        }
+        else {
+            const error = zodResult.error.errors[0].message;
+            responce = {
+                success: false,
+                error: { error }
+            };
+            return responce;
+        }
+    }
+    catch (error) {
+        let err;
+        if (error.number === 2627) {
+            err = "The record already exists, Duplicate email or phone number.";
+        }
+        else {
+            err = `Internal server error: ${error.message || JSON.stringify(error)}`;
+        }
+        responce = {
+            success: false,
+            error: { error: err }
+        };
+        return responce;
+    }
+});
+exports.createMemberService = createMemberService;
+const updateMemberService = (req) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const member_id = parseInt(req.params.id);
+        if (isNaN(member_id)) {
+            responce = {
+                success: false,
+                error: { error: "Invalid member ID. It must be a number." }
+            };
+            return responce;
+        }
+        const zodResult = createmembers_request_1.memberSchema.safeParse(req.body);
+        const data = zodResult.data;
+        if (data) {
+            const pool = yield (0, db_1.getConnection)();
+            const result = yield pool.request()
+                .input("member_id", db_1.sql.Int, member_id)
+                .input("member_name", db_1.sql.VarChar, data.member_name)
+                .input("email", db_1.sql.VarChar, data.email)
+                .input("phone_no", db_1.sql.VarChar, data.phone_no).execute("CreateMember");
+            if (!result.rowsAffected[0]) {
+                responce = {
+                    success: false,
+                    error: { error: "Member not found. Update failed!" }
+                };
+                return responce;
+            }
+            else {
+                responce = {
+                    success: true
+                };
+                return responce;
+            }
+        }
+        else {
+            const error = zodResult.error.errors[0].message;
+            responce = {
+                success: false,
+                error: { error }
+            };
+            return responce;
+        }
+    }
+    catch (error) {
+        let err;
+        if (error.number === 2627) {
+            err = "Duplicate email or phone number, likely the record already exists.";
+        }
+        else {
+            err = `Internal server error: ${error.message || JSON.stringify(error)}`;
+        }
+        responce = {
+            success: false,
+            error: { error: err }
+        };
+        return responce;
+    }
+});
+exports.updateMemberService = updateMemberService;
+const deleteMemberService = (req) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const member_id = parseInt(req.params.id);
+        const pool = yield (0, db_1.getConnection)();
+        const result = yield pool.request()
+            .input("member_id", db_1.sql.Int, member_id)
+            .execute("DeleteMember");
+        if (result.rowsAffected[0] === 0) {
+            responce = {
+                success: false,
+                error: { error: "Member not found!" }
+            };
+            return responce;
+        }
+        else {
+            responce = {
+                success: true,
+            };
+            return responce;
+        }
+    }
+    catch (error) {
+        responce = {
+            success: false,
+            error: { error }
+        };
+        return responce;
+    }
+});
+exports.deleteMemberService = deleteMemberService;

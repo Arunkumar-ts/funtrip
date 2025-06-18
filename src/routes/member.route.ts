@@ -1,7 +1,7 @@
 import express, { Router } from "express";
 import {
-    getAllMembers,
-    getSingleMember,
+    getMembers,
+    getMember,
     createMember,
     updateMember,
     deleteMember
@@ -59,7 +59,7 @@ const router:Router = express.Router();
  *                     type: string
  */
 // GET all members
-router.post("/list", getAllMembers);
+router.post("/list", getMembers);
 
 /**
  * @swagger
@@ -90,7 +90,7 @@ router.post("/list", getAllMembers);
  *                   type: string
  */
 // GET Single member
-router.get("/:id", getSingleMember);
+router.get("/:id", getMember);
 
 /**
  * @swagger

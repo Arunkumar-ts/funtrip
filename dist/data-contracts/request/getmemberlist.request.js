@@ -4,8 +4,8 @@ exports.getmemberSchema = void 0;
 const zod_1 = require("zod");
 exports.getmemberSchema = zod_1.z.object({
     pageSize: zod_1.z.number().min(1, "pageSize must be at least 1"),
-    pageIndex: zod_1.z.number(),
-    searchString: zod_1.z.string().optional(),
+    pageIndex: zod_1.z.number().default(0),
+    searchString: zod_1.z.string().optional().default(""),
     sortBy: zod_1.z.string()
         .transform((val) => val.toLowerCase())
         .refine((val) => ["member_id", "member_name", "email", "phone_no"].includes(val), {

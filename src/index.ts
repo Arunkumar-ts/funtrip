@@ -1,5 +1,4 @@
 import express, {Request, Response, NextFunction, Express } from "express";
-import { Server } from 'http';
 import createHttpError from "http-errors";
 import { config } from "dotenv";
 import route from "./routes";
@@ -16,7 +15,7 @@ app.use(express.json());
 setupSwagger(app); 
 app.use("/api", route);
 
-app.use(( req:Request, res:Response, next:NextFunction)=>{
+app.use(( next:NextFunction)=>{
     next(new createHttpError.NotFound());
 })
 app.use(errorHandler)

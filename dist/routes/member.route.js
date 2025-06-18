@@ -55,7 +55,7 @@ const router = express_1.default.Router();
  *                     type: string
  */
 // GET all members
-router.post("/list", members_controller_1.getAllMembers);
+router.post("/list", members_controller_1.getMembers);
 /**
  * @swagger
  * /api/member/{id}:
@@ -85,7 +85,7 @@ router.post("/list", members_controller_1.getAllMembers);
  *                   type: string
  */
 // GET Single member
-router.get("/:id", members_controller_1.getSingleMember);
+router.get("/:id", members_controller_1.getMember);
 /**
  * @swagger
  * /api/member:

@@ -4,5 +4,5 @@ import { z } from "zod";
 export const memberSchema = z.object({
   member_name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email"),
-  phone_no: z.string().regex(/^\d{10}$/, "Phone number must be 10 digits").optional()
+  phone_no: z.string().regex(/^\d{10}$/, "Phone number must be number and 10 digits").optional()
 }).strict();

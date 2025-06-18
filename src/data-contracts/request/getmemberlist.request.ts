@@ -2,8 +2,8 @@ import { z } from "zod";
 
 export const getmemberSchema = z.object({
     pageSize:z.number().min(1, "pageSize must be at least 1"),
-    pageIndex:z.number(),
-    searchString:z.string().optional(),
+    pageIndex:z.number().default(0),
+    searchString:z.string().optional().default(""),
     sortBy: z.string()
     .transform((val) => val.toLowerCase())
     .refine((val) => ["member_id", "member_name", "email", "phone_no"].includes(val), {

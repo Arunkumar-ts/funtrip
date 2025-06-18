@@ -17,7 +17,7 @@ const PORT = Number(process.env.PORT);
 app.use(express_1.default.json());
 (0, swagger_1.setupSwagger)(app);
 app.use("/api", routes_1.default);
-app.use((req, res, next) => {
+app.use((next) => {
     next(new http_errors_1.default.NotFound());
 });
 app.use(errorHandler_1.errorHandler);
