@@ -91,11 +91,10 @@ const createMemberService = (req) => __awaiter(void 0, void 0, void 0, function*
         if (data) {
             const pool = yield (0, db_1.getConnection)();
             const result = yield pool.request()
-                .input("member_id", db_1.sql.VarChar, 0)
+                .input("member_id", db_1.sql.Int, 0)
                 .input("member_name", db_1.sql.VarChar, data.member_name)
                 .input("email", db_1.sql.VarChar, data.email)
                 .input("phone_no", db_1.sql.VarChar, data.phone_no).execute("CreateMember");
-            console.log(result);
             responce = {
                 success: true
             };

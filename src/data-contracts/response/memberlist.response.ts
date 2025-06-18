@@ -3,7 +3,7 @@ export default interface MemberResponse {
     member_name: string;
     email: string;
     phone_no: string;
-    isDelete: boolean;
+    is_delete: boolean;
     created_on: string; 
     updated_on: string; 
 };
