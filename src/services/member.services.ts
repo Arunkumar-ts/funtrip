@@ -86,7 +86,7 @@ export const createMemberService = async (req:Request) =>{
         const data = zodResult.data;
         if(data){
             const pool = await getConnection();
-            const result = await pool.request()
+            await pool.request()
             .input("member_id", sql.Int, 0)
             .input("member_name", sql.VarChar, data.member_name)
             .input("email", sql.VarChar, data.email)

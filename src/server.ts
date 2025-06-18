@@ -1,4 +1,4 @@
-import express, {Request, Response, NextFunction, Express } from "express";
+import express, {NextFunction, Express } from "express";
 import createHttpError from "http-errors";
 import { config } from "dotenv";
 import route from "./routes";
@@ -21,7 +21,5 @@ app.use(( next:NextFunction)=>{
 app.use(errorHandler)
 
 app.listen(PORT, ()=>{
-    console.log(`Server start at http://localhost:${PORT}`);
+    console.log(`Server started at http://localhost:${PORT}`);
 })
-
-// devops, swagger, service layer

@@ -9,7 +9,7 @@ interface PaymentInput {
   status:string
 }
 
-export const getAllPayments = async (req:Request, res:Response, next:NextFunction)=>{
+export const getAllPayments = async (_req:Request, res:Response, next:NextFunction)=>{
     try {
         const pool = await getConnection();
         const result = await pool.request().execute("GetAllPayments");
