@@ -6,3 +6,9 @@ export const memberSchema = z.object({
   email: z.string().email("Invalid email"),
   phone_no: z.string().regex(/^\d{10}$/, "Phone number must be number and 10 digits").optional()
 }).strict();
+
+export interface createMemberRequest {
+  member_name:string;
+  email:string;
+  phone_no?:string;
+}

@@ -1,8 +1,9 @@
 {
   "name": "funtrip",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/bundle.js",
   "scripts": {
+    "tsoa:gen": "tsoa routes && tsoa spec",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon --watch src --ext ts,json --exec ts-node src/server.ts",
     "start": "node ./dist/bundle.js",
@@ -16,13 +17,12 @@
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "mssql": "^11.0.1",
-    "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
+    "tsoa": "^6.6.0",
     "zod": "^3.25.64"
   },
   "devDependencies": {
     "@types/express": "^5.0.3",
-    "@types/http-errors": "^2.0.5",
     "@types/mssql": "^9.1.7",
     "@types/node": "^24.0.3",
     "@types/swagger-ui-express": "^4.1.8",

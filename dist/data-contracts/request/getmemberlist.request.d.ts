@@ -18,3 +18,10 @@ export declare const getmemberSchema: z.ZodObject<{
     sortBy?: string | undefined;
     sortOn?: string | undefined;
 }>;
+export interface GetMemberRequest {
+    pageSize: number;
+    pageIndex: number;
+    searchString?: string;
+    sortBy?: string;
+    sortOn?: 'ASC' | 'DESC';
+}

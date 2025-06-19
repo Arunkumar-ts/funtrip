@@ -16,3 +16,11 @@ export const getmemberSchema = z.object({
     }).optional().default("ASC"),
 
 }).strict();
+
+export interface GetMemberRequest {
+  pageSize: number;
+  pageIndex: number;
+  searchString?: string;
+  sortBy?: string;
+  sortOn?: 'ASC' | 'DESC';
+}

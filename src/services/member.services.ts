@@ -1,20 +1,19 @@
 import { getConnection, sql } from "../configs/db";
-import { Request} from "express";
 import { getmemberSchema } from "../data-contracts/request/getmemberlist.request";
 import MemberResponse from "../data-contracts/response/memberlist.response";
-import { memberSchema } from "../data-contracts/request/createmembers.request";
-
+import { memberSchema, createMemberRequest } from "../data-contracts/request/createmember.request";
+import { GetMemberRequest } from "../data-contracts/request/getmemberlist.request";
 export interface responseType {
     success:boolean,
     data?:object,
     error?:object
 }
 
-let responce:responseType;
+let response:responseType;
 
-export const getMembersService = async (req:Request) => {
+export const getMembersService = async (req:GetMemberRequest) => {
     try {
-        const zodResult = getmemberSchema.safeParse(req.body);
+        const zodResult = getmemberSchema.safeParse(req);
         const data = zodResult.data;
         if(data){
             const offset = data.pageIndex * data.pageSize;
@@ -27,62 +26,62 @@ export const getMembersService = async (req:Request) => {
             .input("searchString", sql.VarChar, data.searchString)
             .execute("GetMembers");
             const memberData:MemberResponse[] = result.recordset;            
-            responce = {
+            response = {
                 success:true,
                 data:memberData
             }
-            return responce;
+            return response;
         }
         else{
             const error = zodResult.error.errors[0].message ;
-            responce = {
+            response = {
                 success:false,
                 error:{error}
             }
-            return responce;
+            return response;
         }
     } catch (error:any) {
-        responce = {
+        response = {
             success:false,
             error
         }
-        return responce
+        return response
     }
 }
 
-export const getMemberService = async (req:Request) => {
+export const getMemberService = async (id:string) => {
     try {
-        const member_id:number = parseInt(req.params.id);
+        const member_id:number = parseInt(id);
         const pool = await getConnection();
         const result = await pool.request()
         .input("member_id", sql.Int, member_id).execute("GetMember");
         if (result.rowsAffected[0] === 0) {
-            responce = {
+            response = {
                 success:false,
                 error:{error:"Member not found!"}
             }
-            return responce;
+            return response;
         }
         else{
-            const responceData:MemberResponse[] = result.recordset;
-            responce = {
+            const responseData:MemberResponse[] = result.recordset;
+            response = {
                 success:true,
-                data:responceData
+                data:responseData
             }
-            return responce;
+            return response;
         }
     } catch (error:any) {
-        responce = {
+        response = {
             success:false,
             error:{error}
         }
-        return responce
+        return response
     }
 }
 
-export const createMemberService = async (req:Request) =>{
+export const createMemberService = async (req:createMemberRequest) =>{
     try {
-        const zodResult = memberSchema.safeParse(req.body);
+        const zodResult = memberSchema.safeParse(req);
         const data = zodResult.data;
         if(data){
             const pool = await getConnection();
@@ -91,18 +90,18 @@ export const createMemberService = async (req:Request) =>{
             .input("member_name", sql.VarChar, data.member_name)
             .input("email", sql.VarChar, data.email)
             .input("phone_no", sql.VarChar, data.phone_no).execute("CreateMember");
-            responce = {
+            response = {
                 success:true
             }
-            return responce;
+            return response;
         }
         else{
             const error = zodResult.error.errors[0].message ;
-            responce = {
+            response = {
                 success:false,
                 error:{error}
             }
-            return responce;
+            return response;
         }
     } catch (error:any) {
         let err;
@@ -112,25 +111,25 @@ export const createMemberService = async (req:Request) =>{
             err = `Internal server error: ${error.message || JSON.stringify(error)}`;
         }
         
-        responce = {
+        response = {
             success:false,
             error:{error : err}
         }
-        return responce
+        return response
     }
 }
 
-export const updateMemberService = async (req:Request) =>{
+export const updateMemberService = async (id:string, req:createMemberRequest) =>{
     try {
-        const member_id:number = parseInt(req.params.id);
+        const member_id:number = parseInt(id);
         if(isNaN(member_id)){
-            responce = {
+            response = {
                 success:false,
                 error:{error: "Invalid member ID. It must be a number."}
             }
-            return responce;
+            return response;
         }
-        const zodResult = memberSchema.safeParse(req.body);
+        const zodResult = memberSchema.safeParse(req);
         const data = zodResult.data;
         if(data){
             const pool = await getConnection();
@@ -140,26 +139,26 @@ export const updateMemberService = async (req:Request) =>{
             .input("email", sql.VarChar, data.email)
             .input("phone_no", sql.VarChar, data.phone_no).execute("CreateMember");
             if (!result.rowsAffected[0]) {
-                responce = {
+                response = {
                     success:false,
                     error:{error: "Member not found. Update failed!"}
                 }
-                return responce;
+                return response;
             }
             else{
-                responce = {
+                response = {
                     success:true
                 }
-                return responce;
+                return response;
             }
         }
         else{
             const error = zodResult.error.errors[0].message ;
-            responce = {
+            response = {
                 success:false,
                 error:{error}
             }
-            return responce;
+            return response;
         }
     } catch (error:any) {
         let err;
@@ -169,40 +168,40 @@ export const updateMemberService = async (req:Request) =>{
             err = `Internal server error: ${error.message || JSON.stringify(error)}`;
         }
         
-        responce = {
+        response = {
             success:false,
             error:{error : err}
         }
-        return responce
+        return response
     }
 }
 
-export const deleteMemberService = async (req:Request) =>{
+export const deleteMemberService = async (id:string) =>{
     try{
-        const member_id:number = parseInt(req.params.id);
+        const member_id:number = parseInt(id);
         const pool = await getConnection();
         const result = await pool.request()
             .input("member_id", sql.Int, member_id)
             .execute("DeleteMember");
         if (result.rowsAffected[0] === 0) {
-            responce = {
+            response = {
                 success:false,
                 error:{error:"Member not found!"}
             }
-            return responce;
+            return response;
         }
         else{
-            responce = {
+            response = {
                 success:true,
             }
-            return responce;
+            return response;
         }
 
     }catch(error:any){
-        responce = {
+        response = {
             success:false,
             error:{error}
         }
-        return responce
+        return response
     }
 }

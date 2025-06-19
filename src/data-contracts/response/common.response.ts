@@ -19,3 +19,10 @@ export default class CommonResponse {
         return new CommonResponse(code, message, null, errors);
     }
 }
+
+export interface CommonResponseInter {
+    code: number;
+    message: string;
+    data: object | null;
+    errors: object | null;
+}
