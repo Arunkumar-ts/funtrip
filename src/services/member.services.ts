@@ -1,13 +1,9 @@
 import { getConnection, sql } from "../configs/db";
-import { getmemberSchema } from "../data-contracts/request/getmemberlist.request";
+import { getmemberSchema } from "../data-contracts/request/getmembers.request";
 import MemberResponse from "../data-contracts/response/memberlist.response";
 import { memberSchema, createMemberRequest } from "../data-contracts/request/createmember.request";
-import { GetMemberRequest } from "../data-contracts/request/getmemberlist.request";
-export interface responseType {
-    success:boolean,
-    data?:object,
-    error?:object
-}
+import { GetMemberRequest } from "../data-contracts/request/getmembers.request";
+import { responseType } from "../types/common.servise.response";
 
 let response:responseType;
 
@@ -104,7 +100,7 @@ export const createMemberService = async (req:createMemberRequest) =>{
             return response;
         }
     } catch (error:any) {
-        let err;
+        let err:string;
         if (error.number === 2627) {
             err = "The record already exists, Duplicate email or phone number.";
         } else {
@@ -161,7 +157,7 @@ export const updateMemberService = async (id:string, req:createMemberRequest) =>
             return response;
         }
     } catch (error:any) {
-        let err;
+        let err:string;
         if (error.number === 2627) {
             err = "Duplicate email or phone number, likely the record already exists.";
         } else {

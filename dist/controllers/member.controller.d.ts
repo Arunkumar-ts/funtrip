@@ -1,5 +1,5 @@
 import { Controller } from 'tsoa';
-import { GetMemberRequest } from "../data-contracts/request/getmemberlist.request";
+import { GetMemberRequest } from "../data-contracts/request/getmembers.request";
 import { createMemberRequest } from "../data-contracts/request/createmember.request";
 export declare class MemberController extends Controller {
     getMember(id: string): Promise<object>;

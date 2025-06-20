@@ -1,6 +1,5 @@
 import CommonResponse from "../data-contracts/response/common.response";
 import { 
-  responseType,
   getMemberService,
   getMembersService,
   createMemberService,
@@ -8,8 +7,10 @@ import {
   deleteMemberService
 } from "../services/member.services";
 import { Controller, Get, Post, Route, Tags, Path, Body, Put, Delete} from 'tsoa';
-import { GetMemberRequest } from "../data-contracts/request/getmemberlist.request";
+import { GetMemberRequest } from "../data-contracts/request/getmembers.request";
 import { createMemberRequest } from "../data-contracts/request/createmember.request";
+import { responseType } from "../types/common.servise.response";
+
 @Route('member')
 @Tags('Member')
 

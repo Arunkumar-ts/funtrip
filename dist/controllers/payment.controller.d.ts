@@ -1,4 +1,10 @@
-import { NextFunction, Request, Response } from "express";
-export declare const getAllPayments: (_req: Request, res: Response, next: NextFunction) => Promise<void>;
-export declare const getSingleMemberPayments: (req: Request, res: Response, next: NextFunction) => Promise<void>;
-export declare const createPayment: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+import { Controller } from 'tsoa';
+import { createPaymentRequest } from "../data-contracts/request/createpayment.request";
+import { getPaymentsRequest } from "../data-contracts/request/getpayments.request";
+export declare class PaymentController extends Controller {
+    getPaymentByMember(id: string): Promise<object>;
+    createPayment(body: createPaymentRequest): Promise<object>;
+    getPayments(body: getPaymentsRequest): Promise<object>;
+    updatePayment(id: string, body: createPaymentRequest): Promise<object>;
+    deletePayment(id: string): Promise<object>;
+}
