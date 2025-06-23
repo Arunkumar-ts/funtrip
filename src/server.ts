@@ -1,12 +1,10 @@
 import express, { Express } from "express";
 import { config } from "dotenv";
-import { getConnection } from "./configs/db";
 import { RegisterRoutes } from './routes/routes';
 import * as swaggerDocument from './swagger/swagger.json';
 import swaggerUi from 'swagger-ui-express';
 
 config();
-getConnection();
 const app:Express = express();
 const PORT:number = Number(process.env.PORT);
 

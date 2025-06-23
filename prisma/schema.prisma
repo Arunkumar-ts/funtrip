@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+  // output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model Members {
+  member_id   Int        @id(map: "PK__Members__B29B8534C12032DD") @default(autoincrement())
+  member_name String     @db.VarChar(100)
+  email       String     @unique(map: "UQ__Members__AB6E616496F10EED") @db.VarChar(100)
+  phone_no    String?    @unique(map: "UQ__Members__E6BE36DCA33CB97E") @db.VarChar(15)
+  is_delete   Boolean?   @default(false, map: "DF__Members__is_dele__74AE54BC")
+  created_on  DateTime?  @db.DateTime
+  updated_on  DateTime?  @db.DateTime
+  payments    Payments[]
+
+  @@map("Members")
+}
+
+model Payments {
+  payment_id     Int       @id(map: "PK__Payments__ED1FC9EA61822AA8") @default(autoincrement())
+  amount         Int
+  member_id      Int
+  transaction_id String    @unique(map: "UQ__Payments__85C600AE16D7A2C7") @db.VarChar(100)
+  status         String    @db.VarChar(10)
+  is_delete      Boolean?  @default(false, map: "DF__Payments__is_del__18EBB532")
+  created_on     DateTime? @db.DateTime
+  updated_on     DateTime? @db.DateTime
+  member         Members   @relation(fields: [member_id], references: [member_id], onUpdate: NoAction, map: "FK__Payments__member__19DFD96B")
+
+  @@map("Payments")
+}

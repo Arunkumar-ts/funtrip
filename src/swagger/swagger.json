@@ -56,8 +56,8 @@
 					"sortOn": {
 						"type": "string",
 						"enum": [
-							"ASC",
-							"DESC"
+							"asc",
+							"desc"
 						]
 					}
 				},
@@ -87,8 +87,8 @@
 					"sortOn": {
 						"type": "string",
 						"enum": [
-							"ASC",
-							"DESC"
+							"asc",
+							"desc"
 						]
 					}
 				},

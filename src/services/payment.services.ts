@@ -1,8 +1,7 @@
-import { getConnection, sql } from "../configs/db";
 import { responseType } from "../types/common.servise.response";
 import { paymentSchema, createPaymentRequest } from "../data-contracts/request/createpayment.request";
-import PaymentResponse from "../data-contracts/response/payment.responce";
 import { getPaymentsSchema, getPaymentsRequest } from "../data-contracts/request/getpayments.request";
+import prisma from "../prisma";
 
 let response:responseType;
 
@@ -12,17 +11,28 @@ export const createPaymentService = async (req:createPaymentRequest) =>{
             
             const data = zodResult.data;
             if(data){
-                const pool = await getConnection();
-                await pool.request()
-                .input("payment_id", sql.Int, 0)
-                .input("member_id", sql.Int, data.member_id)
-                .input("amount", sql.Int, data.amount)
-                .input("transaction_id", sql.VarChar, data.transaction_id)
-                .input("status", sql.VarChar, data.status).execute("CreatePayment");
-                response = {
-                    success:true
+                const newPayment = await prisma.payments.create({
+                    data: {
+                        member_id:data.member_id,
+                        amount:data.amount,
+                        transaction_id:data.transaction_id,
+                        status:data.status,
+                        created_on: new Date(),
+                    },
+                })
+                if(newPayment){
+                    response = {
+                        success:true,
+                        data:newPayment
+                    }
+                    return response;
                 }
-                return response;
+                else{
+                    response = {
+                        success:false,
+                    }
+                    return response;
+                }
             }
             else{
                 const error = zodResult.error.errors[0].message ;
@@ -36,7 +46,7 @@ export const createPaymentService = async (req:createPaymentRequest) =>{
     } catch (error:any) {
         
         let err:string;
-        if (error.number === 2627) {
+        if (error.code === 'P2002') {
             err = "The record already exists, Duplicate transaction ID.";
         } else {
             err = `Internal server error: ${error.message || JSON.stringify(error)}`;
@@ -54,21 +64,29 @@ export const getPaymentsService = async (req:getPaymentsRequest) =>{
      try {
         const zodResult = getPaymentsSchema.safeParse(req);
         const data = zodResult.data;
-        
         if(data){
             const offset = data.pageIndex * data.pageSize;
-            const pool = await getConnection();
-            const result = await pool.request()
-            .input("pageSize", sql.Int, data.pageSize )
-            .input("offset", sql.Int, offset)
-            .input("sortBy", sql.VarChar, data.sortBy )
-            .input("sortOn", sql.VarChar, data.sortOn )
-            .input("searchString", sql.VarChar, data.searchString)
-            .execute("GetPayments");
-            const paymentData:PaymentResponse[] = result.recordset;            
+            const payments = await prisma.payments.findMany({
+                where: {
+                    is_delete: false,
+                    member: {
+                        member_name: {
+                            contains:data.searchString,
+                        }
+                    },
+                },
+                orderBy: {
+                    [data.sortBy]: data.sortOn
+                },
+                skip: offset,
+                take: data.pageSize,
+                include: {
+                    member: true
+                }
+            });
             response = {
                 success:true,
-                data:paymentData
+                data:payments
             }
             return response;
         }
@@ -92,55 +110,59 @@ export const getPaymentsService = async (req:getPaymentsRequest) =>{
 export const deletePaymentService = async (id:string) =>{
     try{
         const payment_id:number = parseInt(id);
-        const pool = await getConnection();
-        const result = await pool.request()
-            .input("payment_id", sql.Int, payment_id)
-            .execute("DeletePayment");
-        if (result.rowsAffected[0] === 0) {
-            let response:responseType = {
-                success:false,
-                error:{error:"Payment not found!"}
-            }
-            return response;
+        await prisma.payments.update({
+            where: {
+                payment_id,
+            },
+            data: {
+                is_delete:true,
+            },
+        });
+        response = {
+            success:true,
+        }
+        return response    
+    }catch(error:any){
+        let err:string;
+        if(error.code === 'P2025'){
+            err = "No recoRd was found!";
         }
         else{
-            response = {
-                success:true,
-            }
-            return response;
+            err = `Internal server error: ${error.message || JSON.stringify(error)}`;
         }
-
-    }catch(error:any){
         response = {
             success:false,
-            error:{error}
+            error:{error : err}
         }
         return response
     }
 }
 
-export const getPaymentByMember = async (id:string)=>{
+export const getPaymentByMemberService = async (id:string)=>{
     try{
         const member_id:number = parseInt(id);
-        const pool = await getConnection();
-        const result = await pool.request()
-            .input("member_id", sql.Int, member_id)
-            .execute("GetPaymentByMember");
-        if (result.rowsAffected[0] === 0) {
-            response = {
-                success:false,
-                error:{error:"Payments not found!"}
+        const memberWithPayments = await prisma.payments.findMany({
+            where: {
+                member_id,
+                is_delete:false
+            },
+            include: {
+                member: true
             }
-            return response;
+        });
+        if(memberWithPayments.length>0){
+            response = {
+                success:true,
+                data:memberWithPayments
+            }
         }
         else{
             response = {
-                success:true,
-                data:result.recordset
+                success:false,
+                error:{error:"Payment not found!"}
             }
-            return response;
         }
-
+        return response
     }catch(error:any){
         response = {
             success:false,
@@ -156,26 +178,23 @@ export const updatePaymentService = async (id:string, req:createPaymentRequest) 
         const zodResult = paymentSchema.safeParse(req);
         const data = zodResult.data;
         if(data){
-            const pool = await getConnection();
-            const result = await pool.request()
-            .input("payment_id", sql.Int, payment_id)
-            .input("member_id", sql.Int, data.member_id)
-            .input("amount", sql.Int, data.amount)
-            .input("transaction_id", sql.VarChar, data.transaction_id)
-            .input("status", sql.VarChar, data.status).execute("CreatePayment");
-            if (!result.rowsAffected[0]) {
-                response = {
-                    success:false,
-                    error:{error: "Payment not found. Update failed!"}
-                }
-                return response;
+            const updatePayment = await prisma.payments.update({
+                where: {
+                    payment_id,
+                },
+                data: {
+                    member_id:data.member_id,
+                    amount:data.amount,
+                    transaction_id:data.transaction_id,
+                    status:data.status,
+                    updated_on: new Date(),
+                },
+            });
+            response = {
+                success:true,
+                data:updatePayment
             }
-            else{
-                response = {
-                    success:true
-                }
-                return response;
-            }
+            return response;
         }
         else{
             const error = zodResult.error.errors[0].message ;
@@ -189,12 +208,14 @@ export const updatePaymentService = async (id:string, req:createPaymentRequest) 
     } catch (error:any) {
         
         let err:string;
-        if (error.number === 2627) {
+        if (error.code === 'P2002') {
             err = "The record already exists, Duplicate transaction ID.";
-        } else {
+        } else if(error.code === 'P2025'){
+            err = "No record was found!";
+        }
+        else{
             err = `Internal server error: ${error.message || JSON.stringify(error)}`;
         }
-        
         response = {
             success:false,
             error:{error : err}

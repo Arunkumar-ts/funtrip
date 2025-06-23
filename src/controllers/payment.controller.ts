@@ -5,7 +5,7 @@ import {
     createPaymentService, 
     getPaymentsService, 
     deletePaymentService, 
-    getPaymentByMember,
+    getPaymentByMemberService,
     updatePaymentService 
 } from "../services/payment.services";
 import { responseType } from "../types/common.servise.response";
@@ -21,7 +21,7 @@ export class PaymentController extends Controller {
         @Path() id:string 
     ): Promise<object> {
         try {
-        const result: responseType = await getPaymentByMember(id);
+        const result: responseType = await getPaymentByMemberService(id);
         if (result.success) {
             return CommonResponse.success(200, result.data, "Payments fetched successfully");
         } else {

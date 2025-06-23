@@ -4,5 +4,5 @@ import { getPaymentsRequest } from "../data-contracts/request/getpayments.reques
 export declare const createPaymentService: (req: createPaymentRequest) => Promise<responseType>;
 export declare const getPaymentsService: (req: getPaymentsRequest) => Promise<responseType>;
 export declare const deletePaymentService: (id: string) => Promise<responseType>;
-export declare const getPaymentByMember: (id: string) => Promise<responseType>;
+export declare const getPaymentByMemberService: (id: string) => Promise<responseType>;
 export declare const updatePaymentService: (id: string, req: createPaymentRequest) => Promise<responseType>;

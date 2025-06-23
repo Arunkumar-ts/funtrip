@@ -1,9 +1,9 @@
-import { getConnection, sql } from "../configs/db";
 import { getmemberSchema } from "../data-contracts/request/getmembers.request";
-import MemberResponse from "../data-contracts/response/memberlist.response";
 import { memberSchema, createMemberRequest } from "../data-contracts/request/createmember.request";
 import { GetMemberRequest } from "../data-contracts/request/getmembers.request";
 import { responseType } from "../types/common.servise.response";
+import prisma from "../prisma";
+
 
 let response:responseType;
 
@@ -13,18 +13,22 @@ export const getMembersService = async (req:GetMemberRequest) => {
         const data = zodResult.data;
         if(data){
             const offset = data.pageIndex * data.pageSize;
-            const pool = await getConnection();
-            const result = await pool.request()
-            .input("pageSize", sql.Int, data.pageSize )
-            .input("offset", sql.Int, offset)
-            .input("sortBy", sql.VarChar, data.sortBy )
-            .input("sortOn", sql.VarChar, data.sortOn )
-            .input("searchString", sql.VarChar, data.searchString)
-            .execute("GetMembers");
-            const memberData:MemberResponse[] = result.recordset;            
+            const members = await prisma.members.findMany({
+                where: {
+                    is_delete: false,
+                    member_name: {
+                        contains: data.searchString,
+                    }
+                },
+                orderBy: {
+                    [data.sortBy]: data.sortOn
+                },
+                skip: offset,
+                take: data.pageSize
+            });        
             response = {
                 success:true,
-                data:memberData
+                data:members
             }
             return response;
         }
@@ -48,24 +52,25 @@ export const getMembersService = async (req:GetMemberRequest) => {
 export const getMemberService = async (id:string) => {
     try {
         const member_id:number = parseInt(id);
-        const pool = await getConnection();
-        const result = await pool.request()
-        .input("member_id", sql.Int, member_id).execute("GetMember");
-        if (result.rowsAffected[0] === 0) {
+        const member = await prisma.members.findUnique({
+            where: {
+                is_delete: false,
+                member_id
+            }
+        });
+        if(member){
+            response = {
+                success:true,
+                data:member as any
+            }
+        }  
+        else{
             response = {
                 success:false,
                 error:{error:"Member not found!"}
             }
-            return response;
-        }
-        else{
-            const responseData:MemberResponse[] = result.recordset;
-            response = {
-                success:true,
-                data:responseData
-            }
-            return response;
-        }
+        }      
+        return response;
     } catch (error:any) {
         response = {
             success:false,
@@ -80,14 +85,17 @@ export const createMemberService = async (req:createMemberRequest) =>{
         const zodResult = memberSchema.safeParse(req);
         const data = zodResult.data;
         if(data){
-            const pool = await getConnection();
-            await pool.request()
-            .input("member_id", sql.Int, 0)
-            .input("member_name", sql.VarChar, data.member_name)
-            .input("email", sql.VarChar, data.email)
-            .input("phone_no", sql.VarChar, data.phone_no).execute("CreateMember");
+            const newMember = await prisma.members.create({
+                data: {
+                    member_name:data.member_name,
+                    email:data.email,
+                    phone_no:data.phone_no,
+                    created_on: new Date(),
+                },
+            });
             response = {
-                success:true
+                success:true,
+                data:newMember
             }
             return response;
         }
@@ -100,8 +108,10 @@ export const createMemberService = async (req:createMemberRequest) =>{
             return response;
         }
     } catch (error:any) {
+        console.log(error);
+        
         let err:string;
-        if (error.number === 2627) {
+        if (error.code === 'P2002') {
             err = "The record already exists, Duplicate email or phone number.";
         } else {
             err = `Internal server error: ${error.message || JSON.stringify(error)}`;
@@ -118,35 +128,25 @@ export const createMemberService = async (req:createMemberRequest) =>{
 export const updateMemberService = async (id:string, req:createMemberRequest) =>{
     try {
         const member_id:number = parseInt(id);
-        if(isNaN(member_id)){
-            response = {
-                success:false,
-                error:{error: "Invalid member ID. It must be a number."}
-            }
-            return response;
-        }
         const zodResult = memberSchema.safeParse(req);
         const data = zodResult.data;
         if(data){
-            const pool = await getConnection();
-            const result = await pool.request()
-            .input("member_id", sql.Int, member_id)
-            .input("member_name", sql.VarChar, data.member_name)
-            .input("email", sql.VarChar, data.email)
-            .input("phone_no", sql.VarChar, data.phone_no).execute("CreateMember");
-            if (!result.rowsAffected[0]) {
-                response = {
-                    success:false,
-                    error:{error: "Member not found. Update failed!"}
-                }
-                return response;
+            const updateMember = await prisma.members.update({
+                where: {
+                    member_id,
+                },
+                data: {
+                    member_name:data.member_name,
+                    email:data.email,
+                    phone_no:data.phone_no,
+                    updated_on: new Date(),
+                },
+            });
+            response = {
+                success:true,
+                data:updateMember
             }
-            else{
-                response = {
-                    success:true
-                }
-                return response;
-            }
+            return response;
         }
         else{
             const error = zodResult.error.errors[0].message ;
@@ -158,12 +158,14 @@ export const updateMemberService = async (id:string, req:createMemberRequest) =>
         }
     } catch (error:any) {
         let err:string;
-        if (error.number === 2627) {
+        if (error.code === 'P2002') {
             err = "Duplicate email or phone number, likely the record already exists.";
-        } else {
+        } else if(error.code === 'P2025'){
+            err = "Member not found!";
+        }
+        else{
             err = `Internal server error: ${error.message || JSON.stringify(error)}`;
         }
-        
         response = {
             success:false,
             error:{error : err}
@@ -175,28 +177,29 @@ export const updateMemberService = async (id:string, req:createMemberRequest) =>
 export const deleteMemberService = async (id:string) =>{
     try{
         const member_id:number = parseInt(id);
-        const pool = await getConnection();
-        const result = await pool.request()
-            .input("member_id", sql.Int, member_id)
-            .execute("DeleteMember");
-        if (result.rowsAffected[0] === 0) {
-            response = {
-                success:false,
-                error:{error:"Member not found!"}
-            }
-            return response;
+        await prisma.members.update({
+            where: {
+                member_id,
+            },
+            data: {
+                is_delete:true,
+            },
+        });
+        response = {
+            success:true,
+        }        
+        return response;
+    }catch(error:any){
+        let err:string;
+        if(error.code === 'P2025'){
+            err = "Member not found!";
         }
         else{
-            response = {
-                success:true,
-            }
-            return response;
+            err = `Internal server error: ${error.message || JSON.stringify(error)}`;
         }
-
-    }catch(error:any){
         response = {
             success:false,
-            error:{error}
+            error:{error : err}
         }
         return response
     }

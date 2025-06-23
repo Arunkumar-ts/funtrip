@@ -1,16 +1,16 @@
 import { z } from "zod";
 export declare const getmemberSchema: z.ZodObject<{
     pageSize: z.ZodNumber;
-    pageIndex: z.ZodDefault<z.ZodNumber>;
+    pageIndex: z.ZodDefault<z.ZodOptional<z.ZodNumber>>;
     searchString: z.ZodDefault<z.ZodOptional<z.ZodString>>;
-    sortBy: z.ZodDefault<z.ZodOptional<z.ZodEffects<z.ZodEffects<z.ZodString, string, string>, string, string>>>;
-    sortOn: z.ZodDefault<z.ZodOptional<z.ZodEffects<z.ZodEffects<z.ZodString, string, string>, "ASC" | "DESC", string>>>;
+    sortBy: z.ZodDefault<z.ZodOptional<z.ZodEffects<z.ZodString, string, string>>>;
+    sortOn: z.ZodDefault<z.ZodOptional<z.ZodEffects<z.ZodString, "asc" | "desc", string>>>;
 }, "strict", z.ZodTypeAny, {
     pageSize: number;
     pageIndex: number;
     searchString: string;
     sortBy: string;
-    sortOn: "ASC" | "DESC";
+    sortOn: "asc" | "desc";
 }, {
     pageSize: number;
     pageIndex?: number | undefined;
@@ -23,5 +23,5 @@ export interface GetMemberRequest {
     pageIndex: number;
     searchString?: string;
     sortBy?: string;
-    sortOn?: 'ASC' | 'DESC';
+    sortOn?: 'asc' | 'desc';
 }
