@@ -16,7 +16,7 @@ import { getPaymentsRequest } from "../data-contracts/request/getpayments.reques
 
 export class PaymentController extends Controller {
 
-    @Get('{id}')
+    @Get('/ByMember/{id}')
     public async getPaymentByMember( 
         @Path() id:string 
     ): Promise<object> {

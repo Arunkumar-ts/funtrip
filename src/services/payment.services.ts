@@ -97,7 +97,7 @@ export const deletePaymentService = async (id:string) =>{
             .input("payment_id", sql.Int, payment_id)
             .execute("DeletePayment");
         if (result.rowsAffected[0] === 0) {
-            response = {
+            let response:responseType = {
                 success:false,
                 error:{error:"Payment not found!"}
             }

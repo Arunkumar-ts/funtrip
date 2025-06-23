@@ -130,79 +130,9 @@
 		"contact": {}
 	},
 	"paths": {
-		"/payment/{id}": {
+		"/payment/ByMember/{id}": {
 			"get": {
 				"operationId": "GetPaymentByMember",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"additionalProperties": false,
-									"type": "object"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Payment"
-				],
-				"security": [],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				]
-			},
-			"put": {
-				"operationId": "UpdatePayment",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"additionalProperties": false,
-									"type": "object"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Payment"
-				],
-				"security": [],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/createPaymentRequest"
-							}
-						}
-					}
-				}
-			},
-			"delete": {
-				"operationId": "DeletePayment",
 				"responses": {
 					"200": {
 						"description": "Ok",
@@ -296,6 +226,78 @@
 						}
 					}
 				}
+			}
+		},
+		"/payment/{id}": {
+			"put": {
+				"operationId": "UpdatePayment",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"additionalProperties": false,
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Payment"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/createPaymentRequest"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeletePayment",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"additionalProperties": false,
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Payment"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
 			}
 		},
 		"/member/{id}": {

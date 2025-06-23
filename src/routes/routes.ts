@@ -79,7 +79,7 @@ export function RegisterRoutes(app: Router) {
         const argsPaymentController_getPaymentByMember: Record<string, TsoaRoute.ParameterSchema> = {
                 id: {"in":"path","name":"id","required":true,"dataType":"string"},
         };
-        app.get('/payment/:id',
+        app.get('/payment/ByMember/:id',
             ...(fetchMiddlewares<RequestHandler>(PaymentController)),
             ...(fetchMiddlewares<RequestHandler>(PaymentController.prototype.getPaymentByMember)),
 
